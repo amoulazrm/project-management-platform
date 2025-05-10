@@ -1,6 +1,7 @@
 require('dotenv').config(); // Load environment variables
 
 const express = require('express');
+const cors = require('cors'); // Import CORS package
 const app = express();
 
 const connectDB = require('./src/config/db'); // MongoDB connection
@@ -9,6 +10,8 @@ const taskRoutes = require('./src/routes/taskRoutes');
 
 // Connect to MongoDB
 connectDB();
+
+app.use(cors()); // Enable CORS for all origins
 
 app.use(express.json()); // Middleware to parse JSON
 

@@ -1,20 +1,20 @@
-// src/App.jsx
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
 
 const App = () => {
   return (
     <Router>
-      <Navbar />
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/register" component={Register} />
-        <Route path="/dashboard" component={Dashboard} />
-      </Switch>
+      <Routes>
+        <Route path="#Profile" element={<Profile />} />
+        <Route path="#login" element={<Login />} />
+        <Route path="#register" element={<Register />} />
+        <Route path="#dashboard" element={<Dashboard />} />
+        {/* Add other routes here */}
+      </Routes>
     </Router>
   );
 };
