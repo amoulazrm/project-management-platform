@@ -1,89 +1,82 @@
-import axios from 'axios';
+import axios from "axios"
 
-const API_URL = 'http://localhost:5000';
+// Create an axios instance with default config
+const api = axios.create({
+  baseURL: "http://localhost:5000/api", // Replace with your actual API URL
+  headers: {
+    "Content-Type": "application/json",
+  },
+})
 
-// Register new user
-export const registerUser = async (userData) => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json'
+// Authentication APIs
+export const register = async (email, password) => {
+  try {
+    const response = await api.post("/users/register", { email, password })
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+export const login = async (email, password) => {
+  try {
+    const response = await api.post("/users/login", { email, password })
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+// Task APIs
+export const createTask = async (taskData) => {
+  try {
+    const response = await api.post("/tasks", taskData)
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getUserTasks = async (userId) => {
+  try {
+    const response = await api.get(`/tasks/user/${userId}`)
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+export const updateTask = async (taskId, taskData) => {
+  try {
+    const response = await api.put(`/tasks/${taskId}`, taskData)
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+export const deleteTask = async (taskId) => {
+  try {
+    const response = await api.delete(`/tasks/${taskId}`)
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+// Add interceptor to include auth token in requests
+api.interceptors.request.use(
+  (config) => {
+    const user = localStorage.getItem("user")
+    if (user) {
+      // In a real app, you would extract the token from the user object
+      // config.headers.Authorization = `Bearer ${JSON.parse(user).token}`;
     }
-  };
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  },
+)
 
-  const response = await axios.post(`${API_URL}/api/auth/register`, userData, config);
-  return response.data;
-};
-
-// Login user
-export const loginUser = async (userData) => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-
-  const response = await axios.post(`${API_URL}/api/auth/login`, userData, config);
-  return response.data;
-};
-
-// Get projects (protected route)
-export const getProjects = async (token) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  };
-
-  const response = await axios.get(`${API_URL}/api/projects`, config);
-  return response.data;
-};
-
-// Create a new task (protected route)
-export const createTask = async (taskData, token) => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    }
-  };
-
-  const response = await axios.post(`${API_URL}/api/tasks`, taskData, config);
-  return response.data;
-};
-
-// Get tasks for a specific user (protected route)
-export const getUserTasks = async (userId, token) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  };
-
-  const response = await axios.get(`${API_URL}/api/tasks/user/${userId}`, config);
-  return response.data;
-};
-
-// Update a task (protected route)
-export const updateTask = async (taskId, updatedData, token) => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    }
-  };
-
-  const response = await axios.put(`${API_URL}/api/tasks/${taskId}`, updatedData, config);
-  return response.data;
-};
-
-// Delete a task (protected route)
-export const deleteTask = async (taskId, token) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  };
-
-  const response = await axios.delete(`${API_URL}/api/tasks/${taskId}`, config);
-  return response.data;
-};
+export default api
