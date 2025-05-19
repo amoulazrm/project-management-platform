@@ -8,6 +8,7 @@ const connectDB = require('./src/config/db'); // MongoDB connection
 const authRoutes = require('./src/routes/authRoutes');
 const taskRoutes = require('./src/routes/taskRoutes');
 
+
 // Connect to MongoDB
 connectDB();
 
