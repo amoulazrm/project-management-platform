@@ -19,12 +19,13 @@ export function AuthProvider({ children }) {
         // Only access localStorage on the client side
         const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
         if (token) {
-          const response = await api.get("/users/me")
-          setUser(response.data)
+          const response = await api.get("/auth/me")
+          setUser(response.data.user)
         }
       } catch (error) {
         if (typeof window !== "undefined") {
           localStorage.removeItem("token")
+          localStorage.removeItem("userId")
         }
       } finally {
         setLoading(false)
@@ -40,6 +41,7 @@ export function AuthProvider({ children }) {
       const response = await api.post("/auth/login", { email, password })
       if (typeof window !== "undefined") {
         localStorage.setItem("token", response.data.token)
+        localStorage.setItem("userId", response.data.user._id)
       }
       setUser(response.data.user)
       router.push("/dashboard")
@@ -56,6 +58,7 @@ export function AuthProvider({ children }) {
       const response = await api.post("/auth/register", { name, email, password })
       if (typeof window !== "undefined") {
         localStorage.setItem("token", response.data.token)
+        localStorage.setItem("userId", response.data.user._id)
       }
       setUser(response.data.user)
       router.push("/dashboard")
@@ -69,6 +72,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("token")
+      localStorage.removeItem("userId")
     }
     setUser(null)
     router.push("/login")

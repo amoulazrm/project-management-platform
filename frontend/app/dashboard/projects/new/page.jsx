@@ -14,16 +14,19 @@ import { format } from "date-fns"
 import { CalendarIcon, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { api } from "@/lib/api"
+import { useAuth } from "@/components/auth-provider"
 
 export default function NewProjectPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { user } = useAuth()
 
   const [formData, setFormData] = useState({
-    title: "",
+    name: "",
     description: "",
-    status: "active",
+    status: "Planning",
     startDate: new Date(),
     endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
   })
@@ -40,11 +43,11 @@ export default function NewProjectPage() {
     setIsSubmitting(true)
 
     try {
-      // In a real app, you would send this data to your API
-      // await api.post("/projects", formData)
+      if (!user) {
+        throw new Error("Please log in to create a project")
+      }
 
-      // For demo purposes, we'll just simulate a delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await api.post("/projects", formData)
 
       toast({
         title: "Project created",
@@ -56,7 +59,7 @@ export default function NewProjectPage() {
       console.error("Failed to create project", error)
       toast({
         title: "Error",
-        description: "Failed to create project. Please try again.",
+        description: error.message || "Failed to create project. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -76,12 +79,12 @@ export default function NewProjectPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="title">Project Title</Label>
+              <Label htmlFor="name">Project Name</Label>
               <Input
-                id="title"
-                placeholder="Enter project title"
-                value={formData.title}
-                onChange={(e) => handleChange("title", e.target.value)}
+                id="name"
+                placeholder="Enter project name"
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
                 required
               />
             </div>
@@ -105,9 +108,10 @@ export default function NewProjectPage() {
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="on-hold">On Hold</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="Planning">Planning</SelectItem>
+                  <SelectItem value="In Progress">In Progress</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="On Hold">On Hold</SelectItem>
                 </SelectContent>
               </Select>
             </div>

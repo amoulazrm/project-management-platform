@@ -7,6 +7,7 @@ const app = express();
 const connectDB = require('./src/config/db'); // MongoDB connection
 const authRoutes = require('./src/routes/authRoutes');
 const taskRoutes = require('./src/routes/taskRoutes');
+const projectRoutes = require('./src/routes/projectRoutes');
 
 
 // Connect to MongoDB
@@ -19,6 +20,7 @@ app.use(express.json()); // Middleware to parse JSON
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/projects', projectRoutes);
 
 // Default Route
 app.get('/', (req, res) => {
