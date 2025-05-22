@@ -3,17 +3,45 @@ const Project = require('../models/Project');
 // Create a new project
 exports.createProject = async (req, res) => {
   try {
+    console.log('Request body:', req.body);
+    console.log('User:', req.user);
+
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        error: 'Request body is required'
+      });
+    }
+
+    const { name, description, status, startDate, endDate } = req.body;
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        error: 'Project name is required'
+      });
+    }
+
     const project = new Project({
-      ...req.body,
-      owner: req.user._id // Use the authenticated user's ID
+      name,
+      description,
+      status: status || 'Planning',
+      startDate: startDate || new Date(),
+      endDate,
+      owner: req.user._id
     });
-    await project.save();
+
+    console.log('Creating project:', project);
+
+    const savedProject = await project.save();
+    console.log('Project saved:', savedProject);
 
     res.status(201).json({
       success: true,
-      data: project
+      data: savedProject
     });
   } catch (error) {
+    console.error('Error creating project:', error);
     res.status(400).json({
       success: false,
       error: error.message
@@ -40,6 +68,7 @@ exports.getProjects = async (req, res) => {
       data: projects
     });
   } catch (error) {
+    console.error('Error fetching projects:', error);
     res.status(400).json({
       success: false,
       error: error.message
@@ -72,6 +101,7 @@ exports.getProject = async (req, res) => {
       data: project
     });
   } catch (error) {
+    console.error('Error fetching project:', error);
     res.status(400).json({
       success: false,
       error: error.message
@@ -102,6 +132,7 @@ exports.updateProject = async (req, res) => {
       data: project
     });
   } catch (error) {
+    console.error('Error updating project:', error);
     res.status(400).json({
       success: false,
       error: error.message
@@ -130,6 +161,7 @@ exports.deleteProject = async (req, res) => {
       data: {}
     });
   } catch (error) {
+    console.error('Error deleting project:', error);
     res.status(400).json({
       success: false,
       error: error.message

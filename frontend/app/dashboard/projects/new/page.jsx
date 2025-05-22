@@ -47,7 +47,14 @@ export default function NewProjectPage() {
         throw new Error("Please log in to create a project")
       }
 
-      await api.post("/projects", formData)
+      // Format dates to ISO strings
+      const projectData = {
+        ...formData,
+        startDate: formData.startDate.toISOString(),
+        endDate: formData.endDate.toISOString()
+      }
+
+      await api.post("/projects", projectData)
 
       toast({
         title: "Project created",
